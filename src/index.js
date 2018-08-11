@@ -4,11 +4,19 @@ const defaultLanguageProfiles = require('../data/languageProfiles.json')
 
 module.exports = (text, opts) => {
   const { languageProfiles = defaultLanguageProfiles, reducers } = opts
-  //const languages = reducer(text, Object.keys(profiles), reducers)
-  const languages = Object.keys(languageProfiles)
+  const allLanguages = Object.keys(languageProfiles)
+  const reducedLanguages = reducer(text, reducers)
+
+  if (reducedLanguages.length === 1) {
+    return {
+      language: reducedLanguages[0]
+    }
+  }
+
+  const languagesIntersection = () => allLanguages.filter(lang => -1 !== reducedLanguages.indexOf(lang))
+  const languages = reducedLanguages.length > 1 ? languagesIntersection : allLanguages;
   const inputProfile = profile(text)
   const scores = {}
-
   inputProfile.forEach((ngram, index) => {
     languages.forEach(language => {
       const found = languageProfiles[language].findIndex(entry => entry.token === ngram.token)
@@ -21,7 +29,9 @@ module.exports = (text, opts) => {
     .map(language => ({ language: language, score: scores[language] }))
     .sort((first, second) => first.score - second.score)
 
+  const bestMatchParts = sorted[0].language.split('_');
   return {
-    language: sorted[0].language
+    language: bestMatchParts[0],
+    country: bestMatchParts[1] ? bestMatchParts[1] : ''
   }
 }

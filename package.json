@@ -1,11 +1,11 @@
 {
-  "name": "@danielantelo/language-detector",
-  "version": "0.1.2",
-  "description": "Library for detecting the language of a given piece of text",
+  "name": "customisable-language-detection",
+  "version": "0.1.0",
+  "description": "Library that helps detecting the language of a given piece of text.",
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danielantelo/language-detection.git"
+    "url": "git+https://github.com/danielantelo/language-detector.git"
   },
   "dependencies": {},
   "devDependencies": {

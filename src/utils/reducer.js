@@ -1,24 +1,47 @@
 const defaultReducers = [
   {
     regex: /[ñ]+/i,
-    languages: ['es']
+    languages: ['es', 'gn', 'gl']
   },
   {
-    regex: /[é]+/i,
-    languages: ['fr', 'es']
+    regex: /[ü]+/i,
+    languages: ['es', 'tr', 'fr', 'hu', 'et', 'de', 'sv']
   },
   {
-    regex: /[â|ê|î|ô|û]+/i,
-    languages: ['fr']
+    regex: /[ä]+/i,
+    languages: ['is', 'tr', 'hu', 'et', 'de', 'sv', 'sk']
+  },
+  {
+    regex: /[á|é|í|ó|ú]+/i,
+    languages: ['fr', 'es', 'it', 'cn', 'nl', 'fo', 'is', 'pt', 'vi', 'cy', 'el']
+  },
+  {
+    regex: /[â|ê|î]+/i,
+    languages: ['fr', 'it', 'pt', 'ro', 'ru', 'hr', 'tr', 'vi']
+  },
+  {
+    regex: /[ô|û]+/i,
+    languages: ['fr', 'it', 'pt', 'ro', 'ru', 'hr', 'tr', 'vi']
+  },
+  {
+    regex: /[ö]+/i,
+    languages: ['nb', 'nn']
   }
 ]
-module.exports = (text, allLanguages, reducers = defaultReducers) => {
-  const reduced = reducers.reduce((acc, current) => {
-    if (current.regex.test(text)) {
-      acc.push(...current.languages)
-    }
-    return acc;
-  }, [])
 
-  return reduced.length ? reduced.filter((item, pos, self) => self.indexOf(item) == pos) : allLanguages
+module.exports = (text, reducers = defaultReducers) => {
+  let reduced;
+  reducers.forEach((current) => {
+    if (!current.regex.test(text)) {
+      return
+    }
+    const currentLanguages = new Set(current.languages)
+    if (!reduced) {
+      reduced = currentLanguages
+    } else {
+      reduced = new Set([...reduced].filter(lang => currentLanguages.has(lang)));
+    }
+  })
+
+  return reduced ? Array.from(reduced) : []
 }

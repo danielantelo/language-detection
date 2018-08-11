@@ -6,7 +6,8 @@ test('detects english', () => {
     languageProfiles: languageProfilesMock,
     reducers: []
   })).toEqual({
-    language: 'en'
+    language: 'en',
+    country: 'GB'
   })
 })
 
@@ -15,6 +16,7 @@ test('detects spanish', () => {
     languageProfiles: languageProfilesMock,
     reducers: []
   })).toEqual({
-    language: 'es'
+    language: 'es',
+    country: ''
   })
 })
