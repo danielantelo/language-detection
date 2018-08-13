@@ -1,5 +1,4 @@
 node_modules
-data/resources/*.txt
 
 # temp/os files
 .DS_Store

@@ -19,3 +19,20 @@ test('removes numbers', () => {
 test('remove all punctuation except apostrophes', () => {
   expect(sanitize("Hello;. |_, World's!?")).toEqual("hello world's")
 })
+
+test('remove @ mentions', () => {
+  expect(sanitize("@dan hey dude")).toEqual("hey dude")
+})
+
+test('removes html', () => {
+  expect(sanitize("<i class='test'>hey dude</a>")).toEqual("hey dude")
+})
+
+test('removes hyperlinks', () => {
+  expect(sanitize("hello https://google.com/test world")).toEqual("hello world")
+})
+
+test('does not remove foreign chars', () => {
+  expect(sanitize("فيه فرق بين اهل")).toEqual("فيه فرق بين اهل")
+})
+

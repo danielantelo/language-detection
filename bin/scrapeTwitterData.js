@@ -1,21 +1,11 @@
 const fs = require('fs')
 const parse = require('csv-parse')
-const Twitter = require('twitter')
+const request = require('sync-request')
+const cheerio = require('cheerio')
+const sanitize = require('../src/utils/sanitizer')
 
-const client = new Twitter({
-  consumer_key: process.env.TWITTER_KEY,
-  consumer_secret: process.env.TWITTER_SECRET,
-  bearer_token: process.env.TWITTER_TOKEN,
-})
-
-const getTweetText = id => {
-  client.get(`statuses/show/${id}`, tweet => {
-    console.log(tweet)
-  })
-}
-
-const contents = {}
-fs.createReadStream('./data/twitter/resource.tsv')
+const links = []
+fs.createReadStream('./data/resources/twitter/data.tsv')
   .pipe(
     parse({
       delimiter: '\t',
@@ -24,14 +14,30 @@ fs.createReadStream('./data/twitter/resource.tsv')
   .on('data', row => {
     const lang = row[0]
     const twitterId = row[1]
-    const content = getTweetText(twitterId)
-    lang in contents
-      ? (contents[lang] = `${contents[lang]} ${content}`)
-      : (contents[lang] = content)
+    const url = `https://twitter.com/user/status/${twitterId}`
+    links.push({
+      url,
+      lang
+    })
   })
   .on('end', () => {
-    Object.keys(content).forEach(lang => {
-      const data = content[lang]
-      fs.writeFile(`./data/twitter/${lang}.txt`, data)
+    let contents = {}
+    links.forEach(link => {
+      const { url, lang } = link
+      // we do it synchronously to avoid tweeter blocking us
+      const res = request('GET', url);
+      if (res.statusCode === 200) {
+        const html = res.getBody('utf8')
+        const $ = cheerio.load(html)
+        const tweet = sanitize($('.tweet .js-tweet-text-container').text())
+        const content = lang in contents ? `${contents[lang]} ${tweet}` : tweet
+        contents[lang] = content
+      }
+    })
+
+    Object.keys(contents).forEach(lang => {
+      const file = `./data/resources/${lang}.txt`
+      // @NOTE switch between fs.writeFile and fs.appendFileSync as needed
+      fs.appendFileSync(file, ` ${contents[lang]}`)
     })
   })

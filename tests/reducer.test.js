@@ -1,4 +1,4 @@
-const reduce = require('../../src/utils/reducer')
+const reduce = require('../src/reducer')
 
 test('reduces texts with vowel accents', () => {
   expect(reduce('some accént')).toEqual(['fr', 'es', 'it', 'cn', 'nl', 'fo', 'is', 'pt', 'vi', 'cy', 'el'])

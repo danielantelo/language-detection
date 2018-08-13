@@ -1,4 +1,4 @@
-const getNgrams = require('./ngrams')
+const getNgrams = require('./utils/ngrams')
 
 const sortToken = (first, second) => {
   // order desc by count, then token length and finally alphabetically
@@ -12,8 +12,8 @@ const sortToken = (first, second) => {
   return second.count - first.count
 }
 
-module.exports = (text, top = 300) => {
-  return [...getNgrams(text, 2), ...getNgrams(text, 3), ...getNgrams(text, 4)]
+module.exports = (text, top = 500) => {
+  return [...getNgrams(text, 2), ...getNgrams(text, 3)]
     .sort(sortToken)
     .slice(0, top)
 }
